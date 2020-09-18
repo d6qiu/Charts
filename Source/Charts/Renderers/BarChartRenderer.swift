@@ -552,6 +552,9 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                         
                         let val = e.y
                         
+                        guard let formatter = e.valueFormatter else { continue }
+
+                        
                         if dataSet.isDrawValuesEnabled
                         {
                             drawValue(
@@ -618,6 +621,9 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                             {
                                 continue
                             }
+                            
+                            guard let formatter = e.valueFormatter else { continue }
+
                             
                             if dataSet.isDrawValuesEnabled
                             {
@@ -704,6 +710,9 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                                 {
                                     continue
                                 }
+                                
+                                guard let formatter = e.valueFormatter else { continue }
+
                                 
                                 if dataSet.isDrawValuesEnabled
                                 {
@@ -858,7 +867,13 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         // there is the possibility of some labels being rounded up. A floor() might fix this, but seems to be a brute force solution.
         let label = xAxis.valueFormatter?.stringForValue(e.x, axis: xAxis) ?? "\(e.x)"
 
-        var elementValueText = dataSet.valueFormatter?.stringForValue(
+
+//        var elementValueText = dataSet.valueFormatter?.stringForValue(
+//            e.y,
+//            entry: e,
+//            dataSetIndex: dataSetIndex,
+//            viewPortHandler: viewPortHandler) ?? "\(e.y)"
+        var elementValueText = e.valueFormatter?.stringForValue(
             e.y,
             entry: e,
             dataSetIndex: dataSetIndex,
@@ -879,7 +894,12 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
             //Handles empty array of yValues
             let yValue = vals.isEmpty ? 0.0 : vals[idx % vals.count]
             
-            elementValueText = dataSet.valueFormatter?.stringForValue(
+//            elementValueText = dataSet.valueFormatter?.stringForValue(
+//                yValue,
+//                entry: e,
+//                dataSetIndex: dataSetIndex,
+//                viewPortHandler: viewPortHandler) ?? "\(e.y)"
+            elementValueText = e.valueFormatter?.stringForValue(
                 yValue,
                 entry: e,
                 dataSetIndex: dataSetIndex,

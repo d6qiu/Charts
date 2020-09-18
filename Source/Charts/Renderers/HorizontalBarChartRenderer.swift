@@ -250,7 +250,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
 
         for j in stride(from: 0, to: buffer.rects.count, by: 1)
         {
-            let barRect = buffer.rects[j]
+            var barRect = buffer.rects[j]
             
             if (!viewPortHandler.isInBoundsTop(barRect.origin.y + barRect.size.height))
             {
@@ -268,7 +268,71 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                 context.setFillColor(dataSet.color(atIndex: j).cgColor)
             }
 
-            context.fill(barRect)
+            let chart = dataProvider as? BarChartView
+            if let entry = chart?.data?.dataSets[0].entryForIndex(0) as? BarChartDataEntry {
+                if entry.isStacked {
+                    if entry.yValues?[j] != 0.0 {
+                        barRect = barRect.insetBy(dx: 1, dy: 0);
+                //            let barView = UIView.init(frame: barRect)
+                //            let layer = CAShapeLayer()
+                //            barView.layer.addSublayer(layer)
+                //            let animation = CABasicAnimation(keyPath: "strokeEnd")
+                //            animation.fromValue = 0
+                //            animation.toValue = 1
+                //            animation.duration = 2
+                //            layer.add(animation, forKey: "line")
+                            
+                                
+                            let shapeLayer = CAShapeLayer()
+                            shapeLayer.fillColor = dataSet.color(atIndex: j).cgColor
+                            
+            //                let fillColorAnimation = CABasicAnimation(keyPath: "fillColor")
+            //                fillColorAnimation.duration = 100;
+            //                fillColorAnimation.fromValue = UIColor.clear.cgColor;
+            //                fillColorAnimation.toValue = dataSet.color(atIndex: j).cgColor;
+            //                fillColorAnimation.repeatCount = 10;
+            //                fillColorAnimation.autoreverses = true
+                            
+                            let size = CGSize(width: 40, height: 40)
+                        if buffer.rects.count == 1 || (buffer.rects.count == 2 && entry.yValues?.count ?? 0 > j + 1 && entry.yValues?[j + 1] == 0.0) {
+                                let bezierPath = UIBezierPath(roundedRect: barRect, byRoundingCorners: [.topLeft, .bottomLeft, .topRight, .bottomRight], cornerRadii: size)
+                                shapeLayer.path = bezierPath.cgPath
+                                
+                                context.addPath(bezierPath.cgPath)
+                                context.drawPath(using: CGPathDrawingMode.fill)
+                            } else if j == 0 {
+                                let bezierPath = UIBezierPath(roundedRect: barRect, byRoundingCorners: [.topLeft, .bottomLeft], cornerRadii: size)
+                                shapeLayer.path = bezierPath.cgPath
+                            
+                                context.addPath(bezierPath.cgPath)
+                                context.drawPath(using: CGPathDrawingMode.fill)
+                //                shapeLayer.add(fillColorAnimation, forKey: nil)
+                //                shapeLayer.render(in: context)
+
+                            } else if j == buffer.rects.count - 1 || (entry.yValues?.count ?? 0 > j + 1 && entry.yValues?[j + 1] == 0.0 && j + 1 == buffer.rects.count - 1) {
+                                let bezierPath = UIBezierPath(roundedRect: barRect, byRoundingCorners: [.topRight, .bottomRight], cornerRadii: size)
+                //                let  p0 = CGPoint(x: barRect.minX, y: barRect.minY)
+                //                bezierPath.move(to: p0)
+                //
+                //                let  p1 = CGPoint(x: barRect.maxX, y: barRect.maxY)
+                //                bezierPath.addLine(to: p1)
+                //                let dashes: [ CGFloat ] = [ 4.0, 8.0 ]
+                //                bezierPath.setLineDash(dashes, count: dashes.count, phase: 0.0)
+                //                bezierPath.lineWidth = 1.0
+                //                bezierPath.lineCapStyle = .butt
+                //                bezierPath.stroke(with: .color, alpha: 0.5)
+
+                                context.addPath(bezierPath.cgPath)
+                                context.drawPath(using: CGPathDrawingMode.fill)
+                            } else {
+                                context.fill(barRect)
+                            }
+                    }
+                }
+            }
+            
+
+                
 
             if drawBorder
             {
@@ -346,9 +410,11 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                 let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
                 
                 let valueFont = dataSet.valueFont
+//                let valueFont = UIFont.boldSystemFont(ofSize: 16);
+
                 let yOffset = -valueFont.lineHeight / 2.0
                 
-                guard let formatter = dataSet.valueFormatter else { continue }
+//                guard let formatter = dataSet.valueFormatter else { continue }
                 
                 let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
                 
@@ -385,6 +451,8 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                         }
                         
                         let val = e.y
+                        guard let formatter = e.valueFormatter else { continue }
+
                         let valueText = formatter.stringForValue(
                             val,
                             entry: e,
@@ -466,6 +534,8 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                             }
                             
                             let val = e.y
+                            guard let formatter = e.valueFormatter else { continue }
+
                             let valueText = formatter.stringForValue(
                                 val,
                                 entry: e,
@@ -547,6 +617,8 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                             
                             trans.pointValuesToPixel(&transformed)
                             
+                            guard let formatter = e.valueFormatter else { continue }
+
                             for k in 0 ..< transformed.count
                             {
                                 let val = vals[k]
@@ -586,16 +658,43 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                                 {
                                     continue
                                 }
-                                
-                                if dataSet.isDrawValuesEnabled
-                                {
-                                    drawValue(context: context,
-                                        value: valueText,
-                                        xPos: x,
-                                        yPos: y + yOffset,
-                                        font: valueFont,
-                                        align: textAlign,
-                                        color: dataSet.valueTextColorAt(index))
+//                                if let defaultValueFormatter = formatter as? DefaultValueFormatter, (defaultValueFormatter.indexForValueToDisplay as? Int == k) {
+//                                    if dataSet.isDrawValuesEnabled
+//                                    {
+//                                        drawValue(context: context,
+//                                            value: valueText,
+//                                            xPos: x,
+//                                            yPos: y + yOffset,
+//                                            font: valueFont,
+//                                            align: textAlign,
+//                                            color: dataSet.valueTextColorAt(index))
+//                                    }
+//                                }
+                                var avoidOverLappingOffset:CGFloat = 0;
+                                if k == 0 {
+//                                    avoidOverLappingOffset = rect.height / -3
+                                    if dataSet.isDrawValuesEnabled
+                                    {
+                                        drawValue(context: context,
+                                            value: valueText,
+                                            xPos: x,
+                                            yPos: y + (yOffset) + avoidOverLappingOffset,
+                                            font: valueFont,
+                                            align: textAlign,
+                                            color: dataSet.valueTextColorAt(index))
+                                    }
+                                } else {
+//                                    let midX = x - (rect.width / 2)
+                                    if (k % 2 == 1) {avoidOverLappingOffset = rect.height / 3}
+                                    if dataSet.drawAllValues {
+                                        drawValue(context: context,
+                                            value: valueText,
+                                            xPos: x,
+                                            yPos: y + (yOffset) + avoidOverLappingOffset,
+                                            font: valueFont,
+                                            align: textAlign,
+                                            color: dataSet.valueTextColorAt(index))
+                                    }
                                 }
                                 
                                 if let icon = e.icon, dataSet.isDrawIconsEnabled

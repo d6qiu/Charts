@@ -92,6 +92,20 @@ open class ChartDataEntry: ChartDataEntryBase, NSCopying
         
         return copy
     }
+    
+//    var valueFormatter: IValueFormatter? { get set }
+    internal var _valueFormatter: IValueFormatter?
+
+    @objc open var valueFormatter: IValueFormatter?
+    {
+        get { return _valueFormatter }
+        set
+        {
+            if newValue == nil { return }
+            _valueFormatter = newValue
+        }
+    }
+
 }
 
 // MARK: Equatable

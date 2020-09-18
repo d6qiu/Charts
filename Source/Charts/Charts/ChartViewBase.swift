@@ -92,7 +92,7 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     @objc open weak var delegate: ChartViewDelegate?
     
     /// text that is displayed when the chart is empty
-    @objc open var noDataText = "No chart data available."
+    @objc open var noDataText = "Calculating..."
     
     /// Font to be used for the no data text.
     @objc open var noDataFont = NSUIFont.systemFont(ofSize: 12)
@@ -803,7 +803,15 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     /// The Legend object of the chart. This method can be used to get an instance of the legend in order to customize the automatically generated Legend.
     @objc open var legend: Legend
     {
-        return _legend
+//        return _legend
+        get
+        {
+            return _legend
+        }
+        set
+        {
+            _legend = newValue
+        }
     }
     
     /// The renderer object responsible for rendering / drawing the Legend.

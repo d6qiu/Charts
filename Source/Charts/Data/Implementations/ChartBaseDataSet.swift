@@ -365,6 +365,16 @@ open class ChartBaseDataSet: NSObject, IChartDataSet, NSCopying
     {
         return drawValuesEnabled
     }
+    
+    
+    open var drawAllValues = false
+    
+    /// `true` if y-value drawing is enabled, `false` ifnot
+    open var shouldDrawAllValues: Bool
+    {
+        return drawAllValues
+    }
+    
 
     /// Set this to true to draw y-icons on the chart.
     ///
@@ -426,6 +436,8 @@ open class ChartBaseDataSet: NSObject, IChartDataSet, NSCopying
         copy.formLineDashPhase = formLineDashPhase
         copy.formLineDashLengths = formLineDashLengths
         copy.drawValuesEnabled = drawValuesEnabled
+        copy.drawAllValues = drawAllValues
+
         copy.drawValuesEnabled = drawValuesEnabled
         copy.iconsOffset = iconsOffset
         copy.visible = visible

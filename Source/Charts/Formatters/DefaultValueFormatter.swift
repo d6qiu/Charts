@@ -35,6 +35,18 @@ open class DefaultValueFormatter: NSObject, IValueFormatter
         }
     }
     
+    
+    
+    private var _indexForValueToDisplay: NSNumber?
+    @objc open var indexForValueToDisplay: NSNumber?
+    {
+        get { return _indexForValueToDisplay }
+        set
+        {
+            _indexForValueToDisplay = newValue
+        }
+    }
+    
     private var _decimals: Int?
     open var decimals: Int?
     {
@@ -51,6 +63,7 @@ open class DefaultValueFormatter: NSObject, IValueFormatter
             }
         }
     }
+ 
     
     public override init()
     {
